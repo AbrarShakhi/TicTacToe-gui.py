@@ -9,41 +9,75 @@ def swap(two):
 
 
 def game_logic():
-    if grids[1][1]["text"] != empty:
 
-        back_slash = (grids[0][0]["text"] == grids[1][1]["text"]) and (
-            grids[1][1]["text"] == grids[2][2]["text"])
-        slash = (grids[0][2]["text"] == grids[1][1]["text"]) and (
-            grids[1][1]["text"] == grids[2][0]["text"])
-        middle_column = (grids[0][1]["text"] == grids[1][1]["text"]) and (
-            grids[1][1]["text"] == grids[2][1]["text"])
-        middle_row = (grids[1][0]["text"] == grids[1][1]["text"]) and (
-            grids[1][1]["text"] == grids[1][2]["text"])
+    a, b, c = grids[0][0]["text"], grids[0][1]["text"], grids[0][2]["text"]
+    d, e, f = grids[1][0]["text"], grids[1][1]["text"], grids[1][2]["text"]
+    g, h, i = grids[2][0]["text"], grids[2][1]["text"], grids[2][2]["text"]
 
-        if (slash or back_slash) or (middle_column or middle_row):
-            return grids[1][1]["text"]
+    back_slash = (e != empty) and (a == e) and (e == i)
+    if back_slash:
+        grids[0][0].configure(bg="red")
+        grids[1][1].configure(bg="red")
+        grids[2][2].configure(bg="red")
+        return e
 
-    elif grids[0][0]["text"] != empty:
+    slash = (e != empty) and (c == e) and (e == g)
+    if slash:
+        grids[0][2].configure(bg="red")
+        grids[1][1].configure(bg="red")
+        grids[2][0].configure(bg="red")
+        return e
 
-        up = (grids[0][0]["text"] == grids[0][1]["text"]) and (
-            grids[0][0]["text"] == grids[0][2]["text"])
-        left = (grids[0][0]["text"] == grids[1][0]["text"]) and (
-            grids[0][0]["text"] == grids[2][0]["text"])
+    middle_column = (e != empty) and (b == e) and (e == h)
+    if middle_column:
+        grids[0][1].configure(bg="red")
+        grids[1][1].configure(bg="red")
+        grids[2][1].configure(bg="red")
+        return e
 
-        if up or left:
-            return grids[0][0]["text"]
+    middle_row = (e != empty) and (d == e) and (e == f)
+    if middle_row:
+        grids[1][0].configure(bg="red")
+        grids[1][1].configure(bg="red")
+        grids[1][2].configure(bg="red")
+        return e
 
-    elif grids[2][2]["text"] != empty:
+    up = (a != empty) and (a == b) and (a == c)
+    if up:
+        grids[0][0].configure(bg="red")
+        grids[0][1].configure(bg="red")
+        grids[0][2].configure(bg="red")
+        return a
 
-        down = (grids[2][0]["text"] == grids[2][2]["text"]) and (
-            grids[2][2]["text"] == grids[2][1]["text"])
-        right = (grids[0][2]["text"] == grids[2][2]["text"]) and (
-            grids[2][2]["text"] == grids[1][2]["text"])
+    left = (a != empty) and (a == d) and (a == g)
+    if left:
+        grids[0][0].configure(bg="red")
+        grids[1][0].configure(bg="red")
+        grids[2][0].configure(bg="red")
+        return a
 
-        if down or right:
-            return grids[2][2]["text"]
+    down = (i != empty) and (g == i) and (i == h)
+    if down:
+        grids[2][0].configure(bg="red")
+        grids[2][2].configure(bg="red")
+        grids[2][1].configure(bg="red")
+        return i
+
+    right = (i != empty) and (c == i) and (i == f)
+    if right:
+        grids[0][2].configure(bg="red")
+        grids[2][2].configure(bg="red")
+        grids[1][2].configure(bg="red")
+        return i
 
     return empty
+
+
+def end_game():
+    for g in grids:
+        for i in g:
+            if i["state"] != "disabled":
+                i["state"] = "disabled"
 
 
 def switch(i, j):
@@ -52,23 +86,36 @@ def switch(i, j):
         b["state"] = "disabled"
         b["text"] = marker[0]
         winner = game_logic()
-        if winner != empty:
-            print(f"The winner is {marker[0]}")
-        else:
+        if winner == empty:
             swap(marker)
+        else:
+            print(f"The winner is {marker[0]}")
+            end_game()
+
 
 def initialization():
-    # if rand.choice([True, False]):
-    #     swap(marker)
+    if rand.choice([True, False]):
+        swap(marker)
+
+    black = "black"
+    white = "white"
+    gray = "gray"
+    default_font = ("Helvetica", 50)
 
     root.resizable(False, False)
     root.title('Tic Tac Toe')
-    padx, pady = 12, 12
+    padx, pady = 8, 8
     for i in range(0, 3):
         g = []
         for j in range(0, 3):
-            b = tk.Button(root, text=empty, width=2, height=2,
-                          command=lambda i=i, j=j: switch(i, j))
+            b = tk.Button(
+                root,
+                text=empty,
+                font=default_font,
+                bg=white,
+                fg=black,
+                command=lambda i=i, j=j: switch(i, j)
+            )
             b.grid(row=i, column=j, padx=padx, pady=pady)
             g.append(b)
         grids.append(g)
@@ -76,8 +123,10 @@ def initialization():
 
 root = tk.Tk()
 grids = []
-empty = "  "
-marker = ['o', 'x']
+empty = "    "
+o = ' o '
+x = ' x '
+marker = [' o ', ' x ']
 
 
 if __name__ == "__main__":
